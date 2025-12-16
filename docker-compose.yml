@@ -1,0 +1,159 @@
+version: '3.8'
+
+services:
+  # PostgreSQL - Base de données
+  postgres:
+    image: postgres:15-alpine
+    container_name: reservation-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    networks:
+      - reservation-network
+
+  # RabbitMQ - Message Broker
+  rabbitmq:
+    image: rabbitmq:3.12-management-alpine
+    container_name: reservation-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - reservation-network
+
+  # Config Server
+  config-server:
+    build: ./ms-serveur-config
+    container_name: ms-serveur-config
+    ports:
+      - "8888:8888"
+    networks:
+      - reservation-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8888/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Eureka Server
+  eureka-server:
+    build: ./ms-serveur-eureka
+    container_name: ms-serveur-eureka
+    ports:
+      - "8761:8761"
+    depends_on:
+      config-server:
+        condition: service_healthy
+    networks:
+      - reservation-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Gateway
+  gateway:
+    build: ./ms-passerelle
+    container_name: ms-passerelle
+    ports:
+      - "8080:8080"
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+    networks:
+      - reservation-network
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+
+  # MS Utilisateur
+  ms-utilisateur:
+    build: ./ms-utilisateur
+    container_name: ms-utilisateur
+    ports:
+      - "8081:8081"
+    depends_on:
+      - postgres
+      - eureka-server
+    networks:
+      - reservation-network
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/db_utilisateur
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+
+  # MS Vol
+  ms-vol:
+    build: ./ms-vol
+    container_name: ms-vol
+    ports:
+      - "8082:8082"
+    depends_on:
+      - postgres
+      - eureka-server
+    networks:
+      - reservation-network
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/db_vol
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+
+  # MS Hotel
+  ms-hotel:
+    build: ./ms-hotel
+    container_name: ms-hotel
+    ports:
+      - "8083:8083"
+    depends_on:
+      - postgres
+      - eureka-server
+    networks:
+      - reservation-network
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/db_hotel
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+
+  # MS Reservation
+  ms-reservation:
+    build: ./ms-reservation
+    container_name: ms-reservation
+    ports:
+      - "8084:8084"
+    depends_on:
+      - postgres
+      - eureka-server
+    networks:
+      - reservation-network
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/db_reservation
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+
+  # MS Notification
+  ms-notification:
+    build: ./ms-notification
+    container_name: ms-notification
+    ports:
+      - "8085:8085"
+    depends_on:
+      - postgres
+      - rabbitmq
+      - eureka-server
+    networks:
+      - reservation-network
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/db_notification
+      SPRING_RABBITMQ_HOST: rabbitmq
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+
+volumes:
+  postgres_data:
+
+networks:
+  reservation-network:
+    driver: bridge
