@@ -1,0 +1,105 @@
+<div class="register-container">
+  <div class="register-card">
+    <h2>Inscription</h2>
+    
+    <form (ngSubmit)="onSubmit()" #registerForm="ngForm">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="nom">Nom</label>
+          <input 
+            type="text" 
+            id="nom" 
+            name="nom"
+            [(ngModel)]="nom" 
+            required 
+            class="form-control"
+            placeholder="Nom"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="prenom">Prénom</label>
+          <input 
+            type="text" 
+            id="prenom" 
+            name="prenom"
+            [(ngModel)]="prenom" 
+            required 
+            class="form-control"
+            placeholder="Prénom"
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input 
+          type="email" 
+          id="email" 
+          name="email"
+          [(ngModel)]="email" 
+          required 
+          class="form-control"
+          placeholder="votre@email.com"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="motDePasse">Mot de passe</label>
+        <input 
+          type="password" 
+          id="motDePasse" 
+          name="motDePasse"
+          [(ngModel)]="motDePasse" 
+          required 
+          minlength="6"
+          class="form-control"
+          placeholder="••••••••"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="confirmMotDePasse">Confirmer le mot de passe</label>
+        <input 
+          type="password" 
+          id="confirmMotDePasse" 
+          name="confirmMotDePasse"
+          [(ngModel)]="confirmMotDePasse" 
+          required 
+          class="form-control"
+          placeholder="••••••••"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="role">Rôle</label>
+        <select 
+          id="role" 
+          name="role"
+          [(ngModel)]="role" 
+          class="form-control"
+        >
+          <option value="USER">Utilisateur</option>
+          <option value="ADMIN">Administrateur</option>
+        </select>
+      </div>
+
+      <div class="error-message" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+
+      <button 
+        type="submit" 
+        class="btn-primary" 
+        [disabled]="loading || !registerForm.form.valid"
+      >
+        <span *ngIf="!loading">S'inscrire</span>
+        <span *ngIf="loading">Inscription en cours...</span>
+      </button>
+    </form>
+
+    <div class="login-link">
+      <p>Déjà un compte ? <a routerLink="/login">Se connecter</a></p>
+    </div>
+  </div>
+</div>

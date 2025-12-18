@@ -29,4 +29,12 @@ export class ServiceVol {
   creerVol(vol: any): Observable<any> {
     return this.http.post<any>(this.urlBase, vol);
   }
+
+  mettreAJourVol(id: number, vol: any): Observable<any> {
+    return this.http.put<any>(`${this.urlBase}/${id}`, vol);
+  }
+
+  supprimerVol(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.urlBase}/${id}`);
+  }
 }

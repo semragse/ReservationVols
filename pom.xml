@@ -36,6 +36,7 @@
         <module>ms-vol</module>
         <module>ms-hotel</module>
         <module>ms-reservation</module>
+        <module>ms-authentication</module>
     </modules>
 
     <dependencyManagement>

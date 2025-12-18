@@ -1,0 +1,50 @@
+<div class="login-container">
+  <div class="login-card">
+    <h2>Connexion</h2>
+    
+    <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input 
+          type="email" 
+          id="email" 
+          name="email"
+          [(ngModel)]="email" 
+          required 
+          class="form-control"
+          placeholder="votre@email.com"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="motDePasse">Mot de passe</label>
+        <input 
+          type="password" 
+          id="motDePasse" 
+          name="motDePasse"
+          [(ngModel)]="motDePasse" 
+          required 
+          class="form-control"
+          placeholder="••••••••"
+        />
+      </div>
+
+      <div class="error-message" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+
+      <button 
+        type="submit" 
+        class="btn-primary" 
+        [disabled]="loading || !loginForm.form.valid"
+      >
+        <span *ngIf="!loading">Se connecter</span>
+        <span *ngIf="loading">Connexion en cours...</span>
+      </button>
+    </form>
+
+    <div class="register-link">
+      <p>Pas encore de compte ? <a routerLink="/register">S'inscrire</a></p>
+    </div>
+  </div>
+</div>

@@ -67,9 +67,60 @@ import { ServiceReservation } from '../../services/service-reservation';
   `,
   styles: [`
     h2 {
+    import { ServiceAuth } from '../../services/service-auth';
       color: #1e293b;
       margin-bottom: 2rem;
     }
+          <div *ngIf="isAdmin" class="carte carte-admin">
+            <div class="entete-admin">
+              <div>
+                <h3>{{ editionEnCours ? 'Modifier un vol' : 'Créer un vol' }}</h3>
+                <p class="sous-texte">Actions réservées aux administrateurs</p>
+              </div>
+              <div class="actions-rapides">
+                <button class="btn btn-primaire" (click)="demarrerCreation()">Nouveau vol</button>
+              </div>
+            </div>
+
+            <form class="grille-formulaire" (ngSubmit)="sauvegarderVol()">
+              <label class="champ">
+                <span>Numéro de vol</span>
+                <input name="numeroVol" [(ngModel)]="formVol.numeroVol" required />
+              </label>
+              <label class="champ">
+                <span>Compagnie</span>
+                <input name="compagnie" [(ngModel)]="formVol.compagnie" required />
+              </label>
+              <label class="champ">
+                <span>Ville de départ</span>
+                <input name="villeDepart" [(ngModel)]="formVol.villeDepart" required />
+              </label>
+              <label class="champ">
+                <span>Ville d'arrivée</span>
+                <input name="villeArrivee" [(ngModel)]="formVol.villeArrivee" required />
+              </label>
+              <label class="champ">
+                <span>Date de départ</span>
+                <input type="datetime-local" name="dateDepart" [(ngModel)]="formVol.dateDepart" required />
+              </label>
+              <label class="champ">
+                <span>Date d'arrivée</span>
+                <input type="datetime-local" name="dateArrivee" [(ngModel)]="formVol.dateArrivee" required />
+              </label>
+              <label class="champ">
+                <span>Places totales</span>
+                <input type="number" min="1" name="nombrePlaces" [(ngModel)]="formVol.nombrePlaces" required />
+              </label>
+              <label class="champ">
+                <span>Prix (€)</span>
+                <input type="number" step="0.01" min="0" name="prix" [(ngModel)]="formVol.prix" required />
+              </label>
+              <div class="actions-formulaire">
+                <button type="submit" class="btn btn-primaire">{{ editionEnCours ? 'Enregistrer les modifications' : 'Ajouter le vol' }}</button>
+                <button type="button" class="btn btn-secondaire" (click)="demarrerCreation()">Annuler</button>
+              </div>
+            </form>
+          </div>
 
     .formulaire-recherche {
       display: grid;
@@ -135,6 +186,17 @@ import { ServiceReservation } from '../../services/service-reservation';
       border-top: 1px solid #e2e8f0;
     }
 
+    .actions-vol {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .actions-admin-vol {
+      display: flex;
+      gap: 0.5rem;
+    }
+
     .prix-container {
       display: flex;
       flex-direction: column;
@@ -152,6 +214,50 @@ import { ServiceReservation } from '../../services/service-reservation';
       color: #94a3b8;
       font-weight: 500;
     }
+
+    .carte-admin {
+      border: 1px solid #e2e8f0;
+      background: #f8fafc;
+    }
+
+    .entete-admin {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .sous-texte {
+      margin: 0;
+      color: #94a3b8;
+    }
+
+    .grille-formulaire {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+    }
+
+    .champ {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      font-weight: 600;
+      color: #334155;
+    }
+
+    .champ input {
+      padding: 0.6rem 0.75rem;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 0.95rem;
+    }
+
+    .actions-formulaire {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
   `]
 })
 export class ComposantListeVols implements OnInit {
@@ -161,11 +267,18 @@ export class ComposantListeVols implements OnInit {
     villeDepart: '',
     villeArrivee: ''
   };
+  formVol: any = this.nouveauFormulaire();
+  editionEnCours = false;
 
   constructor(
     private serviceVol: ServiceVol,
-    private serviceReservation: ServiceReservation
+    private serviceReservation: ServiceReservation,
+    private serviceAuth: ServiceAuth
   ) {}
+
+  get isAdmin(): boolean {
+    return this.serviceAuth.isAdmin;
+  }
 
   ngOnInit(): void {
     this.chargerVols();
@@ -249,5 +362,92 @@ export class ComposantListeVols implements OnInit {
         alert('Une erreur est survenue lors de la réservation. Veuillez réessayer.');
       }
     });
+  }
+
+  demarrerCreation(): void {
+    this.formVol = this.nouveauFormulaire();
+    this.editionEnCours = false;
+  }
+
+  editerVol(vol: any): void {
+    this.editionEnCours = true;
+    this.formVol = {
+      id: vol.id,
+      numeroVol: vol.numeroVol,
+      compagnie: vol.compagnie,
+      villeDepart: vol.villeDepart,
+      villeArrivee: vol.villeArrivee,
+      dateDepart: this.formatDateTimeLocal(vol.dateDepart),
+      dateArrivee: this.formatDateTimeLocal(vol.dateArrivee),
+      nombrePlaces: vol.nombrePlaces,
+      prix: vol.prix
+    };
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  sauvegarderVol(): void {
+    const payload = {
+      numeroVol: this.formVol.numeroVol,
+      compagnie: this.formVol.compagnie,
+      villeDepart: this.formVol.villeDepart,
+      villeArrivee: this.formVol.villeArrivee,
+      dateDepart: new Date(this.formVol.dateDepart).toISOString(),
+      dateArrivee: new Date(this.formVol.dateArrivee).toISOString(),
+      nombrePlaces: Number(this.formVol.nombrePlaces),
+      prix: Number(this.formVol.prix)
+    };
+
+    const action$ = this.editionEnCours && this.formVol.id
+      ? this.serviceVol.mettreAJourVol(this.formVol.id, payload)
+      : this.serviceVol.creerVol(payload);
+
+    action$.subscribe({
+      next: () => {
+        this.demarrerCreation();
+        this.chargerVols();
+      },
+      error: (err) => {
+        console.error('Erreur lors de la sauvegarde du vol', err);
+        alert('Impossible de sauvegarder le vol.');
+      }
+    });
+  }
+
+  supprimerVol(vol: any): void {
+    const confirmation = confirm(`Supprimer le vol ${vol.numeroVol} ?`);
+    if (!confirmation) {
+      return;
+    }
+
+    this.serviceVol.supprimerVol(vol.id).subscribe({
+      next: () => this.chargerVols(),
+      error: (err) => {
+        console.error('Erreur lors de la suppression du vol', err);
+        alert('Impossible de supprimer le vol.');
+      }
+    });
+  }
+
+  private nouveauFormulaire() {
+    return {
+      id: null,
+      numeroVol: '',
+      compagnie: '',
+      villeDepart: '',
+      villeArrivee: '',
+      dateDepart: '',
+      dateArrivee: '',
+      nombrePlaces: 0,
+      prix: 0
+    };
+  }
+
+  private formatDateTimeLocal(date: string): string {
+    if (!date) {
+      return '';
+    }
+    const d = new Date(date);
+    const pad = (v: number) => v.toString().padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
   }
 }
