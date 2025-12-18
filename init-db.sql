@@ -1,11 +1,11 @@
--- Script d'initialisation des bases de données
--- Exécuté automatiquement par Docker lors du premier démarrage de PostgreSQL
+-- Script d'initialisation des bases de données MySQL
+-- Exécuté automatiquement par Docker lors du premier démarrage de MySQL
 
-CREATE DATABASE db_utilisateur;
-CREATE DATABASE db_vol;
-CREATE DATABASE db_hotel;
-CREATE DATABASE db_reservation;
-CREATE DATABASE db_notification;
+CREATE DATABASE IF NOT EXISTS db_utilisateur;
+CREATE DATABASE IF NOT EXISTS db_vol;
+CREATE DATABASE IF NOT EXISTS db_hotel;
+CREATE DATABASE IF NOT EXISTS db_reservation;
+CREATE DATABASE IF NOT EXISTS db_notification;
 
 -- Afficher les bases créées
-\l
+SHOW DATABASES;

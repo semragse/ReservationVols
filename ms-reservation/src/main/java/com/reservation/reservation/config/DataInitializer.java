@@ -1,7 +1,7 @@
 package com.reservation.reservation.config;
 
-import com.reservation.reservation.entite.Reservation;
-import com.reservation.reservation.repository.ReservationRepository;
+import com.reservation.reservation.entities.Reservation;
+import com.reservation.reservation.repositories.ReservationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;

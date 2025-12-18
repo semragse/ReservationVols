@@ -1,6 +1,6 @@
 package com.reservation.vol.config;
 
-import com.reservation.vol.entite.Vol;
+import com.reservation.vol.entities.Vol;
 import com.reservation.vol.repository.VolRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

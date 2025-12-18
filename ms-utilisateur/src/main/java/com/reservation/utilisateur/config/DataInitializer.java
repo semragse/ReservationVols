@@ -1,7 +1,7 @@
 package com.reservation.utilisateur.config;
 
-import com.reservation.utilisateur.entite.Utilisateur;
-import com.reservation.utilisateur.repository.UtilisateurRepository;
+import com.reservation.utilisateur.entities.Utilisateur;
+import com.reservation.utilisateur.repositories.UtilisateurRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;

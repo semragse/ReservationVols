@@ -1,6 +1,6 @@
 package com.reservation.utilisateur.dto;
 
-import com.reservation.utilisateur.entite.Utilisateur;
+import com.reservation.utilisateur.entities.Utilisateur;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

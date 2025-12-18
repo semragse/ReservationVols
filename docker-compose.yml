@@ -1,20 +1,26 @@
 version: '3.8'
 
 services:
-  # PostgreSQL - Base de données
-  postgres:
-    image: postgres:15-alpine
-    container_name: reservation-postgres
+  # MySQL - Base de données
+  mysql:
+    image: mysql:8.0
+    container_name: reservation-mysql
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db_reservation
     ports:
-      - "5432:5432"
+      - "3306:3306"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - mysql_data:/var/lib/mysql
       - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    command: --default-authentication-plugin=mysql_native_password
     networks:
       - reservation-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   # RabbitMQ - Message Broker
   rabbitmq:
@@ -81,12 +87,16 @@ services:
     ports:
       - "8081:8081"
     depends_on:
-      - postgres
-      - eureka-server
+      mysql:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
     networks:
       - reservation-network
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/db_utilisateur
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/db_utilisateur?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
 
   # MS Vol
@@ -96,12 +106,16 @@ services:
     ports:
       - "8082:8082"
     depends_on:
-      - postgres
-      - eureka-server
+      mysql:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
     networks:
       - reservation-network
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/db_vol
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/db_vol?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
 
   # MS Hotel
@@ -111,12 +125,16 @@ services:
     ports:
       - "8083:8083"
     depends_on:
-      - postgres
-      - eureka-server
+      mysql:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
     networks:
       - reservation-network
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/db_hotel
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/db_hotel?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
 
   # MS Reservation
@@ -126,34 +144,26 @@ services:
     ports:
       - "8084:8084"
     depends_on:
-      - postgres
-      - eureka-server
+      mysql:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
     networks:
       - reservation-network
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/db_reservation
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
-
-  # MS Notification
-  ms-notification:
-    build: ./ms-notification
-    container_name: ms-notification
-    ports:
-      - "8085:8085"
-    depends_on:
-      - postgres
-      - rabbitmq
-      - eureka-server
-    networks:
-      - reservation-network
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/db_notification
-      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/db_reservation?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
 
 volumes:
-  postgres_data:
+  mysql_data:
 
 networks:
   reservation-network:
     driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.20.0.0/16
+          gateway: 172.20.0.1

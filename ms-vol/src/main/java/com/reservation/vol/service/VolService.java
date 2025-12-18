@@ -2,7 +2,7 @@ package com.reservation.vol.service;
 
 import com.reservation.vol.dto.CreationVolDto;
 import com.reservation.vol.dto.VolDto;
-import com.reservation.vol.entite.Vol;
+import com.reservation.vol.entities.Vol;
 import com.reservation.vol.exception.RessourceNonTrouveeException;
 import com.reservation.vol.exception.VolDejaExistantException;
 import com.reservation.vol.repository.VolRepository;

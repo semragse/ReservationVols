@@ -1,6 +1,6 @@
 package com.reservation.vol.dto;
 
-import com.reservation.vol.entite.Vol;
+import com.reservation.vol.entities.Vol;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

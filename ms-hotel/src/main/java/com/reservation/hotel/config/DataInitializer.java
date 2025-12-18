@@ -1,7 +1,7 @@
 package com.reservation.hotel.config;
 
-import com.reservation.hotel.entite.Hotel;
-import com.reservation.hotel.repository.HotelRepository;
+import com.reservation.hotel.entities.Hotel;
+import com.reservation.hotel.repositories.HotelRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
@@ -58,12 +58,11 @@ public class DataInitializer implements CommandLineRunner {
         hotel.setVille(ville);
         hotel.setPays(pays);
         hotel.setAdresse(adresse);
-        hotel.setNombreEtoiles(nombreEtoiles);
+        hotel.setEtoiles(nombreEtoiles);
         hotel.setPrixParNuit(prixParNuit);
         hotel.setNombreChambres(chambresDisponibles);
         hotel.setChambresDisponibles(chambresDisponibles);
         hotel.setDescription(description);
-        hotel.setStatut(Hotel.StatutHotel.ACTIF);
         return hotel;
     }
 }

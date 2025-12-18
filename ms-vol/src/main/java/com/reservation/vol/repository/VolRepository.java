@@ -1,6 +1,6 @@
 package com.reservation.vol.repository;
 
-import com.reservation.vol.entite.Vol;
+import com.reservation.vol.entities.Vol;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

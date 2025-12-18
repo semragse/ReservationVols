@@ -190,17 +190,20 @@ export class ComposantListeVols implements OnInit {
       // Implémentation de la recherche
       console.log('Recherche:', this.recherche);
     } else {
+      this.chargerVols();
+    }
+  }
 
   reserverVol(vol: any): void {
     // Demander le nombre de personnes
     const nombrePersonnesStr = prompt(`Combien de personnes pour le vol ${vol.numeroVol} ?`, '1');
-    
+
     if (!nombrePersonnesStr) {
       return; // Utilisateur a annulé
     }
 
     const nombrePersonnes = parseInt(nombrePersonnesStr, 10);
-    
+
     if (isNaN(nombrePersonnes) || nombrePersonnes < 1 || nombrePersonnes > vol.placesDisponibles) {
       alert(`Veuillez entrer un nombre valide entre 1 et ${vol.placesDisponibles}`);
       return;
@@ -212,7 +215,7 @@ export class ComposantListeVols implements OnInit {
       numeroReservation: 'RES-' + Math.random().toString(36).substr(2, 8).toUpperCase(),
       type: 'VOL',
       volId: vol.id,
-      nombrePersonnes: nombrePersonnes,
+      nombrePersonnes,
       montantTotal: vol.prix * nombrePersonnes,
       statut: 'EN_ATTENTE'
     };
@@ -229,8 +232,5 @@ export class ComposantListeVols implements OnInit {
         alert('Une erreur est survenue lors de la réservation. Veuillez réessayer.');
       }
     });
-  }
-      this.chargerVols();
-    }
   }
 }
