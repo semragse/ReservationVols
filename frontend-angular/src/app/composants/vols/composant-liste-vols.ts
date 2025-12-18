@@ -186,9 +186,26 @@ export class ComposantListeVols implements OnInit {
   }
 
   rechercherVols(): void {
-    if (this.recherche.villeDepart && this.recherche.villeArrivee) {
-      // Implémentation de la recherche
-      console.log('Recherche:', this.recherche);
+    this.chargement = true;
+    
+    if (this.recherche.villeDepart || this.recherche.villeArrivee) {
+      this.serviceVol.obtenirTousLesVols().subscribe({
+        next: (data) => {
+          // Filtrer les vols selon les critères de recherche
+          this.vols = data.filter((vol: any) => {
+            const correspondDepart = !this.recherche.villeDepart || 
+              vol.villeDepart.toLowerCase().includes(this.recherche.villeDepart.toLowerCase());
+            const correspondArrivee = !this.recherche.villeArrivee || 
+              vol.villeArrivee.toLowerCase().includes(this.recherche.villeArrivee.toLowerCase());
+            return correspondDepart && correspondArrivee;
+          });
+          this.chargement = false;
+        },
+        error: (err) => {
+          console.error('Erreur lors de la recherche des vols', err);
+          this.chargement = false;
+        }
+      });
     } else {
       this.chargerVols();
     }
