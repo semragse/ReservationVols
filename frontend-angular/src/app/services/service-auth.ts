@@ -13,6 +13,9 @@ export interface RegisterRequest {
   prenom: string;
   email: string;
   motDePasse: string;
+  codePays: string;
+  telephone: string;
+  age: number;
   role?: string;
 }
 
@@ -20,6 +23,7 @@ export interface AuthResponse {
   token: string;
   email: string;
   role: string;
+  id?: number;
 }
 
 export interface Utilisateur {
@@ -87,6 +91,7 @@ export class ServiceAuth {
     localStorage.setItem('token', response.token);
     
     const user: Utilisateur = {
+      id: response.id,
       email: response.email,
       role: response.role,
       nom: '',

@@ -13,9 +13,23 @@ export class ComposantRegister {
   email: string = '';
   motDePasse: string = '';
   confirmMotDePasse: string = '';
+  codePays: string = '+33';
+  telephone: string = '';
+  age: number | null = null;
   role: string = 'USER';
   errorMessage: string = '';
   loading: boolean = false;
+
+  paysDisponibles = [
+    { code: '+33', label: 'France (+33)' },
+    { code: '+212', label: 'Maroc (+212)' },
+    { code: '+32', label: 'Belgique (+32)' },
+    { code: '+41', label: 'Suisse (+41)' },
+    { code: '+44', label: 'Royaume-Uni (+44)' },
+    { code: '+1', label: 'États-Unis (+1)' },
+    { code: '+34', label: 'Espagne (+34)' },
+    { code: '+39', label: 'Italie (+39)' }
+  ];
 
   constructor(
     private authService: ServiceAuth,
@@ -31,7 +45,7 @@ export class ComposantRegister {
     this.errorMessage = '';
 
     // Validation
-    if (!this.nom || !this.prenom || !this.email || !this.motDePasse) {
+    if (!this.nom || !this.prenom || !this.email || !this.motDePasse || !this.telephone || this.age === null) {
       this.errorMessage = 'Veuillez remplir tous les champs';
       return;
     }
@@ -46,6 +60,11 @@ export class ComposantRegister {
       return;
     }
 
+    if (this.age < 18 || this.age > 120) {
+      this.errorMessage = 'L\'âge doit être compris entre 18 et 120 ans';
+      return;
+    }
+
     this.loading = true;
 
     const registerRequest = {
@@ -53,6 +72,9 @@ export class ComposantRegister {
       prenom: this.prenom,
       email: this.email,
       motDePasse: this.motDePasse,
+      codePays: this.codePays,
+      telephone: this.telephone,
+      age: this.age ?? 0,
       role: this.role
     };
 

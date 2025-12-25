@@ -10,7 +10,7 @@ import { Component, OnInit } from '@angular/core';
         
         <div class="grille-fonctionnalites">
           <div class="carte-fonctionnalite carte-principale">
-            <div class="icone">🌍</div>
+            <div class="icone"></div>
             <h3>Destinations</h3>
             <p>Explorez toutes nos destinations avec vols et hôtels inclus</p>
             <button class="btn btn-primaire btn-large" routerLink="/destinations">
@@ -19,7 +19,7 @@ import { Component, OnInit } from '@angular/core';
           </div>
           
           <div class="carte-fonctionnalite">
-            <div class="icone">📋</div>
+            <div class="icone"></div>
             <h3>Mes Réservations</h3>
             <p>Gérez, recherchez et modifiez toutes vos réservations</p>
             <button class="btn btn-primaire" routerLink="/reservations">Voir mes réservations</button>
@@ -30,19 +30,19 @@ import { Component, OnInit } from '@angular/core';
           <h2>Pourquoi choisir notre plateforme ?</h2>
           <div class="grille-avantages">
             <div class="avantage">
-              <span class="icone-avantage">✓</span>
+              <span class="icone-avantage"></span>
               <p>Réservation simplifiée en un clic</p>
             </div>
             <div class="avantage">
-              <span class="icone-avantage">✓</span>
+              <span class="icone-avantage"></span>
               <p>Vols et hôtels au même endroit</p>
             </div>
             <div class="avantage">
-              <span class="icone-avantage">✓</span>
+              <span class="icone-avantage"></span>
               <p>Modification facile de vos réservations</p>
             </div>
             <div class="avantage">
-              <span class="icone-avantage">✓</span>
+              <span class="icone-avantage"></span>
               <p>Recherche par dates disponible</p>
             </div>
           </div>
@@ -52,7 +52,7 @@ import { Component, OnInit } from '@angular/core';
   `,
   styles: [`
     .hero {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #000035 0%, #1a1a5a 100%);
       color: white;
       padding: 80px 0;
       text-align: center;
@@ -113,7 +113,7 @@ import { Component, OnInit } from '@angular/core';
     .carte-fonctionnalite h3 {
       font-size: 2rem;
       margin-bottom: 1rem;
-      color: #667eea;
+      color: #000035;
     }
 
     .carte-fonctionnalite p {
@@ -133,12 +133,12 @@ import { Component, OnInit } from '@angular/core';
     }
 
     .btn-primaire {
-      background: #667eea;
+      background: #000035;
       color: white;
     }
 
     .btn-primaire:hover {
-      background: #5568d3;
+      background: #111158;
       transform: scale(1.05);
     }
 

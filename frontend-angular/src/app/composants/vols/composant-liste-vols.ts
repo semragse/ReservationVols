@@ -138,7 +138,7 @@ import { ServiceAuth } from '../../services/service-auth';
     }
 
     .carte-vol {
-      border-left: 4px solid #667eea;
+      border-left: 4px solid #000035;
     }
 
     .entete-vol {
@@ -149,7 +149,7 @@ import { ServiceAuth } from '../../services/service-auth';
     }
 
     .badge {
-      background: #667eea;
+      background: #000035;
       color: white;
       padding: 4px 12px;
       border-radius: 12px;
@@ -166,7 +166,7 @@ import { ServiceAuth } from '../../services/service-auth';
 
     .ville {
       font-weight: 600;
-      color: #667eea;
+      color: #000035;
     }
 
     .fleche {
@@ -207,7 +207,7 @@ import { ServiceAuth } from '../../services/service-auth';
     .prix {
       font-size: 1.5rem;
       font-weight: bold;
-      color: #667eea;
+      color: #000035;
     }
 
     .prix-mad {

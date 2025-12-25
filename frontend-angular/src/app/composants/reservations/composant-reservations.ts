@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ServiceReservation } from '../../services/service-reservation';
+import { ServiceVol } from '../../services/service-vol';
+import { ServiceHotel } from '../../services/service-hotel';
+import { ServiceAuth } from '../../services/service-auth';
 
 @Component({
   selector: 'app-reservations',
@@ -13,6 +16,7 @@ import { ServiceReservation } from '../../services/service-reservation';
 
       <div *ngIf="!chargement && reservations.length === 0" class="carte">
         <p class="info-message">Vous n'avez aucune réservation pour le moment.</p>
+        <p *ngIf="infoMessage" class="info-message">{{ infoMessage }}</p>
       </div>
 
       <div *ngIf="!chargement && reservations.length > 0" class="liste-reservations">
@@ -29,13 +33,25 @@ import { ServiceReservation } from '../../services/service-reservation';
               <strong>Type:</strong> {{ getTypeLibelle(reservation.type) }}
             </div>
             
-            <div *ngIf="reservation.volId" class="info-ligne">
-              <strong>Vol ID:</strong> {{ reservation.volId }}
-            </div>
-            
-            <div *ngIf="reservation.hotelId" class="info-ligne">
-              <strong>Hôtel ID:</strong> {{ reservation.hotelId }}
-            </div>
+            <ng-container *ngIf="reservation.volId && volsById[reservation.volId] as vol">
+              <div class="bloc-detail">
+                <div class="sous-titre">Détail du vol</div>
+                <div class="info-ligne"><strong>Vol:</strong> {{ vol.numeroVol }} ({{ vol.compagnie }})</div>
+                <div class="info-ligne"><strong>Trajet:</strong> {{ vol.villeDepart }} → {{ vol.villeArrivee }}</div>
+                <div class="info-ligne"><strong>Départ:</strong> {{ vol.dateDepart | date:'dd/MM/yyyy HH:mm' }}</div>
+                <div class="info-ligne"><strong>Prix:</strong> {{ vol.prix }}€</div>
+              </div>
+            </ng-container>
+
+            <ng-container *ngIf="reservation.hotelId && hotelsById[reservation.hotelId] as hotel">
+              <div class="bloc-detail">
+                <div class="sous-titre">Détail de l'hôtel</div>
+                <div class="info-ligne"><strong>Nom:</strong> {{ hotel.nom }}</div>
+                <div class="info-ligne"><strong>Adresse:</strong> {{ hotel.adresse }}, {{ hotel.ville }}</div>
+                <div class="info-ligne"><strong>Étoiles:</strong> {{ hotel.etoiles }}</div>
+                <div class="info-ligne"><strong>Prix/nuit:</strong> {{ hotel.prixParNuit }}€</div>
+              </div>
+            </ng-container>
             
             <div *ngIf="reservation.dateDebut" class="info-ligne">
               <strong>Du:</strong> {{ reservation.dateDebut | date:'dd/MM/yyyy' }}
@@ -62,8 +78,57 @@ import { ServiceReservation } from '../../services/service-reservation';
               Créée le: {{ reservation.dateCreation | date:'dd/MM/yyyy HH:mm' }}
             </div>
           </div>
-          
-          <div class="actions-reservation" *ngIf="reservation.statut !== 'ANNULEE' && reservation.statut !== 'EXPIREE'">
+
+          <div class="form-edition" *ngIf="editionReservationId === reservation.id">
+            <div class="form-row">
+              <label>
+                <span>Nombre de personnes</span>
+                <input type="number" min="1" [(ngModel)]="editionDraft.nombrePersonnes" />
+              </label>
+              <label *ngIf="reservation.hotelId">
+                <span>Nombre de chambres</span>
+                <input type="number" min="1" [(ngModel)]="editionDraft.nombreChambres" />
+              </label>
+            </div>
+            <div class="form-row" *ngIf="reservation.dateDebut">
+              <label>
+                <span>Date début</span>
+                <input type="date" [(ngModel)]="editionDraft.dateDebut" />
+              </label>
+              <label>
+                <span>Date fin</span>
+                <input type="date" [(ngModel)]="editionDraft.dateFin" />
+              </label>
+            </div>
+            <div class="form-row">
+              <label>
+                <span>Statut</span>
+                <select [(ngModel)]="editionDraft.statut">
+                  <option value="EN_ATTENTE">En attente</option>
+                  <option value="CONFIRMEE">Confirmée</option>
+                  <option value="ANNULEE">Annulée</option>
+                  <option value="EXPIREE">Expirée</option>
+                </select>
+              </label>
+            </div>
+            <div class="actions-edition">
+              <button class="btn btn-info" (click)="validerEdition()">Enregistrer</button>
+              <button class="btn btn-secondaire" (click)="annulerEdition()">Annuler</button>
+            </div>
+          </div>
+
+          <div class="actions-reservation" *ngIf="reservation.statut !== 'ANNULEE' && reservation.statut !== 'EXPIREE' && editionReservationId !== reservation.id">
+            <button class="btn btn-info" (click)="demarrerEdition(reservation)">
+              Modifier
+            </button>
+            <button class="btn btn-secondaire" (click)="annulerReservation(reservation.id)">
+              Annuler
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `,
             <button class="btn btn-info" (click)="modifierReservation(reservation)">
               Modifier
             </button>
@@ -227,60 +292,149 @@ import { ServiceReservation } from '../../services/service-reservation';
     .btn-secondaire:hover {
       background-color: #dc2626;
     }
+
+    .form-edition {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid #e2e8f0;
+      display: grid;
+      gap: 1rem;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+    }
+
+    .form-row label {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      font-weight: 600;
+      color: #475569;
+    }
+
+    .form-row input,
+    .form-row select {
+      padding: 0.6rem;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-weight: 500;
+    }
+
+    .actions-edition {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: flex-end;
+    }
   `]
 })
 export class ComposantReservations implements OnInit {
   reservations: any[] = [];
+  volsById: Record<number, any> = {};
+  hotelsById: Record<number, any> = {};
   chargement = false;
+  infoMessage = '';
 
-  constructor(private serviceReservation: ServiceReservation) {}
+  constructor(
+    private serviceReservation: ServiceReservation,
+    private serviceVol: ServiceVol,
+    private serviceHotel: ServiceHotel,
+    private serviceAuth: ServiceAuth
+  ) {}
 
   ngOnInit(): void {
-    this.chargerReservations();
+    this.chargerDonnees();
   }
 
-  chargerReservations(): void {
+  chargerDonnees(): void {
     this.chargement = true;
-    this.serviceReservation.obtenirToutesReservations().subscribe({
-      next: (data) => {
-        this.reservations = data;
-        this.chargement = false;
+    this.infoMessage = '';
+
+    const currentUser = this.serviceAuth.currentUserValue;
+    // Backend auth response currently may not return user id; fallback to 1 to stay consistent
+    // with the temporary reservation creation fallback used elsewhere.
+    const utilisateurId = currentUser?.id ?? 1;
+    if (!currentUser?.id) {
+      this.infoMessage = 'Id utilisateur manquant, utilisation d\'un identifiant par défaut (1).';
+    }
+
+    this.serviceVol.obtenirTousLesVols().subscribe({
+      next: (vols) => {
+        vols.forEach(v => { if (v.id) { this.volsById[v.id] = v; } });
+        this.serviceHotel.obtenirTousLesHotels().subscribe({
+          next: (hotels) => {
+            hotels.forEach(h => { if (h.id) { this.hotelsById[h.id] = h; } });
+            this.serviceReservation.obtenirReservationsParUtilisateur(utilisateurId).subscribe({
+              next: (data) => {
+                this.reservations = data;
+                this.chargement = false;
+              },
+              error: (error) => {
+                console.error('Erreur lors du chargement des réservations:', error);
+                this.chargement = false;
+              }
+            });
+          },
+          error: (error) => {
+            console.error('Erreur chargement hôtels:', error);
+            this.chargement = false;
+          }
+        });
       },
       error: (error) => {
-        console.error('Erreur lors du chargement des réservations:', error);
+        console.error('Erreur chargement vols:', error);
         this.chargement = false;
       }
     });
   }
 
   modifierReservation(reservation: any): void {
-    const nouveauNombre = prompt(`Modifier le nombre de personnes (actuel: ${reservation.nombrePersonnes}):`, reservation.nombrePersonnes.toString());
-    
-    if (!nouveauNombre) {
+    this.demarrerEdition(reservation);
+  }
+
+  demarrerEdition(reservation: any): void {
+    this.editionReservationId = reservation.id;
+    this.editionDraft = { ...reservation };
+  }
+
+  annulerEdition(): void {
+    this.editionReservationId = null;
+    this.editionDraft = null;
+  }
+
+  validerEdition(): void {
+    if (!this.editionDraft) { return; }
+
+    if (!this.editionDraft.nombrePersonnes || this.editionDraft.nombrePersonnes < 1) {
+      alert('Veuillez saisir un nombre de personnes valide');
       return;
     }
 
-    const nombrePersonnes = parseInt(nouveauNombre, 10);
-    
-    if (isNaN(nombrePersonnes) || nombrePersonnes < 1) {
-      alert('Veuillez entrer un nombre valide');
+    if (this.editionDraft.hotelId && (!this.editionDraft.nombreChambres || this.editionDraft.nombreChambres < 1)) {
+      alert('Veuillez saisir un nombre de chambres valide');
       return;
     }
 
-    // Recalculer le montant si c'est un vol
-    const prixUnitaire = reservation.montantTotal / reservation.nombrePersonnes;
-    const nouveauMontant = prixUnitaire * nombrePersonnes;
+    // Recalculer le montant basé sur les prix connus
+    let montant = 0;
+    if (this.editionDraft.volId && this.volsById[this.editionDraft.volId]) {
+      montant += (this.volsById[this.editionDraft.volId].prix || 0) * this.editionDraft.nombrePersonnes;
+    }
+    if (this.editionDraft.hotelId && this.hotelsById[this.editionDraft.hotelId]) {
+      montant += (this.hotelsById[this.editionDraft.hotelId].prixParNuit || 0) * (this.editionDraft.nombreChambres || 1);
+    }
+    if (montant === 0 && this.editionDraft.montantTotal) {
+      montant = this.editionDraft.montantTotal; // fallback if prices not loaded
+    }
+    this.editionDraft.montantTotal = montant;
 
-    const reservationModifiee = {
-      ...reservation,
-      nombrePersonnes: nombrePersonnes,
-      montantTotal: nouveauMontant
-    };
-
-    this.serviceReservation.creerReservation(reservationModifiee).subscribe({
+    this.serviceReservation.creerReservation(this.editionDraft).subscribe({
       next: () => {
         alert('Réservation modifiée avec succès!');
-        this.chargerReservations();
+        this.annulerEdition();
+        this.chargerDonnees();
       },
       error: (error) => {
         console.error('Erreur lors de la modification:', error);
@@ -294,7 +448,7 @@ export class ComposantReservations implements OnInit {
       this.serviceReservation.annulerReservation(id).subscribe({
         next: () => {
           alert('Réservation annulée avec succès!');
-          this.chargerReservations();
+          this.chargerDonnees();
         },
         error: (error) => {
           console.error('Erreur lors de l\'annulation de la réservation:', error);

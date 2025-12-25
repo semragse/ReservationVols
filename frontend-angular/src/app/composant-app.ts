@@ -8,9 +8,9 @@ import { Router } from '@angular/router';
     <nav class="navigation">
       <div class="conteneur">
         <div class="nav-contenu">
-          <h1 class="logo">✈️ Réservation Voyages</h1>
+          <h1 class="logo">Réservation Voyages</h1>
           <ul class="nav-liens">
-            <li><a routerLink="/" routerLinkActive="actif" [routerLinkActiveOptions]="{exact: true}">Accueil</a></li>
+            <li><a routerLink="/" routerLinkActive="actif">Accueil</a></li>
             <li *ngIf="isAuthenticated"><a routerLink="/destinations" routerLinkActive="actif">Destinations</a></li>
             <li *ngIf="isAuthenticated"><a routerLink="/reservations" routerLinkActive="actif">Mes Réservations</a></li>
           </ul>
@@ -32,7 +32,7 @@ import { Router } from '@angular/router';
   `,
   styles: [`
     .navigation {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #000035 0%, #1a1a5a 100%);
       color: white;
       padding: 1rem 0;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
@@ -113,7 +113,7 @@ import { Router } from '@angular/router';
 
     .btn-register {
       background-color: white;
-      color: #667eea;
+      color: #000035;
     }
 
     .btn-register:hover {

@@ -1,6 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
 :root {
-  --couleur-primaire: #2563eb;
+  --couleur-primaire: #000035;
   --couleur-secondaire: #64748b;
   --couleur-succes: #10b981;
   --couleur-danger: #ef4444;
@@ -42,7 +42,7 @@ body {
 }
 
 .btn-primaire:hover {
-  background-color: #1d4ed8;
+  background-color: #111158;
 }
 
 .btn-secondaire {

@@ -44,6 +44,49 @@
         />
       </div>
 
+      <div class="form-row">
+        <div class="form-group">
+          <label for="codePays">Code pays</label>
+          <select
+            id="codePays"
+            name="codePays"
+            [(ngModel)]="codePays"
+            required
+            class="form-control"
+          >
+            <option *ngFor="let pays of paysDisponibles" [value]="pays.code">{{ pays.label }}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="telephone">Numéro de téléphone</label>
+          <input
+            type="tel"
+            id="telephone"
+            name="telephone"
+            [(ngModel)]="telephone"
+            required
+            class="form-control"
+            placeholder="612345678"
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="age">Âge</label>
+        <input
+          type="number"
+          id="age"
+          name="age"
+          [(ngModel)]="age"
+          required
+          min="18"
+          max="120"
+          class="form-control"
+          placeholder="18"
+        />
+      </div>
+
       <div class="form-group">
         <label for="motDePasse">Mot de passe</label>
         <input 

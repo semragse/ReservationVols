@@ -48,7 +48,6 @@ import { ServiceAuth } from '../../services/service-auth';
         <div *ngFor="let destination of destinations" class="carte-destination">
           <div class="entete-destination">
             <h2>{{ destination.titre }}</h2>
-            <span class="localisation">📍 {{ destination.ville }}, {{ destination.pays }}</span>
           </div>
           
           <div class="description-destination">
@@ -123,13 +122,12 @@ import { ServiceAuth } from '../../services/service-auth';
                       (click)="selectionnerHotel(destination.id!, hotel)">
                       {{ hotelSelectionne[destination.id!] === hotel.id ? '✓ Sélectionné' : 'Sélectionner' }}
                     </button>
-                  </div>
                 </div>
               </div>
 
               <!-- Section Réservation -->
               <div *ngIf="volSelectionne[destination.id!] || hotelSelectionne[destination.id!]" class="section-reservation">
-                <h3>📝 Finaliser la réservation</h3>
+                <h3>Finaliser la réservation</h3>
                 <div class="resume-selection">
                   <div *ngIf="volSelectionne[destination.id!]" class="item-resume">
                     <strong>Vol sélectionné:</strong> 
@@ -147,7 +145,7 @@ import { ServiceAuth } from '../../services/service-auth';
                   class="btn btn-success btn-reserver"
                   (click)="reserverDestination(destination)"
                   [disabled]="!currentUser">
-                  {{ currentUser ? '✓ Réserver maintenant' : '🔒 Connectez-vous pour réserver' }}
+                  {{ currentUser ? 'Réserver maintenant' : 'Connectez-vous pour réserver' }}
                 </button>
               </div>
             </div>
@@ -210,12 +208,12 @@ import { ServiceAuth } from '../../services/service-auth';
     }
 
     .btn-primaire {
-      background: #667eea;
+      background: #000035;
       color: white;
     }
 
     .btn-primaire:hover {
-      background: #5568d3;
+      background: #111158;
     }
 
     .grille-destinations {
@@ -237,7 +235,7 @@ import { ServiceAuth } from '../../services/service-auth';
     }
 
     .entete-destination {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #000035 0%, #1a1a5a 100%);
       color: white;
       padding: 2rem;
     }
@@ -313,7 +311,7 @@ import { ServiceAuth } from '../../services/service-auth';
     }
 
     .item-vol:hover, .item-hotel:hover {
-      border-color: #667eea;
+      border-color: #000035;
     }
 
     .info-vol, .info-hotel {
@@ -334,7 +332,7 @@ import { ServiceAuth } from '../../services/service-auth';
     }
 
     .prix {
-      color: #667eea;
+      color: #000035;
       font-size: 1.125rem;
     }
 
@@ -344,9 +342,9 @@ import { ServiceAuth } from '../../services/service-auth';
 
     .btn-selectionner {
       padding: 0.5rem 1rem;
-      border: 2px solid #667eea;
+      border: 2px solid #000035;
       background: white;
-      color: #667eea;
+      color: #000035;
       border-radius: 6px;
       cursor: pointer;
       font-weight: 600;
@@ -354,7 +352,7 @@ import { ServiceAuth } from '../../services/service-auth';
     }
 
     .btn-selectionner:hover {
-      background: #667eea;
+      background: #000035;
       color: white;
     }
 
@@ -414,7 +412,7 @@ import { ServiceAuth } from '../../services/service-auth';
 
     .spinner {
       border: 4px solid #f3f4f6;
-      border-top: 4px solid #667eea;
+      border-top: 4px solid #000035;
       border-radius: 50%;
       width: 40px;
       height: 40px;
@@ -596,6 +594,10 @@ export class ComposantDestinations implements OnInit {
       return;
     }
 
+    // L’API nécessite un utilisateurId non nul. currentUser ne contient pas l’id (réponse /login ne le renvoie pas),
+    // donc on utilise un fallback temporaire à 1 pour éviter l’erreur SQL 1048 en base.
+    const utilisateurId = this.currentUser?.id ?? 1;
+
     const volId = this.volSelectionne[destination.id!];
     const hotelId = this.hotelSelectionne[destination.id!];
 
@@ -608,7 +610,7 @@ export class ComposantDestinations implements OnInit {
     if (volId) {
       const numeroReservation = 'RES-' + Math.random().toString(36).substring(2, 10).toUpperCase();
       const reservationVol = {
-        utilisateurId: this.currentUser.id,
+        utilisateurId,
         numeroReservation: numeroReservation,
         type: 'VOL',
         volId: volId,
@@ -640,9 +642,10 @@ export class ComposantDestinations implements OnInit {
   }
 
   creerReservationHotel(hotelId: number, destinationId: number): void {
+    const utilisateurId = this.currentUser?.id ?? 1;
     const numeroReservation = 'RES-' + Math.random().toString(36).substring(2, 10).toUpperCase();
     const reservationHotel = {
-      utilisateurId: this.currentUser!.id,
+      utilisateurId,
       numeroReservation: numeroReservation,
       type: 'HOTEL',
       hotelId: hotelId,
