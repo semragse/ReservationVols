@@ -12,11 +12,13 @@ import { ComposantListeHotels } from './composants/hotels/composant-liste-hotels
 import { ComposantReservations } from './composants/reservations/composant-reservations';
 import { ComposantLogin } from './composants/auth/composant-login';
 import { ComposantRegister } from './composants/auth/composant-register';
+import { ComposantDestinations } from './composants/destinations/composant-destinations';
 
 const routes: Routes = [
   { path: '', component: ComposantAccueil },
   { path: 'login', component: ComposantLogin },
   { path: 'register', component: ComposantRegister },
+  { path: 'destinations', component: ComposantDestinations },
   { path: 'vols', component: ComposantListeVols },
   { path: 'hotels', component: ComposantListeHotels },
   { path: 'reservations', component: ComposantReservations },
@@ -27,6 +29,7 @@ const routes: Routes = [
   declarations: [
     ComposantApp,
     ComposantAccueil,
+    ComposantDestinations,
     ComposantListeVols,
     ComposantListeHotels,
     ComposantReservations,

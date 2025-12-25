@@ -11,8 +11,7 @@ import { Router } from '@angular/router';
           <h1 class="logo">✈️ Réservation Voyages</h1>
           <ul class="nav-liens">
             <li><a routerLink="/" routerLinkActive="actif" [routerLinkActiveOptions]="{exact: true}">Accueil</a></li>
-            <li *ngIf="isAuthenticated"><a routerLink="/vols" routerLinkActive="actif">Vols</a></li>
-            <li *ngIf="isAuthenticated"><a routerLink="/hotels" routerLinkActive="actif">Hôtels</a></li>
+            <li *ngIf="isAuthenticated"><a routerLink="/destinations" routerLinkActive="actif">Destinations</a></li>
             <li *ngIf="isAuthenticated"><a routerLink="/reservations" routerLinkActive="actif">Mes Réservations</a></li>
           </ul>
           <div class="auth-section">

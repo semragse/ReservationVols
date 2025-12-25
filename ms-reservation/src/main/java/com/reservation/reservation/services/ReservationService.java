@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -38,6 +39,12 @@ public class ReservationService {
     @Transactional
     public Reservation creerReservation(Reservation reservation) {
         log.info("Création d'une nouvelle réservation");
+        
+        // Générer un numéro de réservation unique si non fourni
+        if (reservation.getNumeroReservation() == null || reservation.getNumeroReservation().isEmpty()) {
+            reservation.setNumeroReservation("RES-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
+        }
+        
         return reservationRepository.save(reservation);
     }
 

@@ -71,19 +71,6 @@
         />
       </div>
 
-      <div class="form-group">
-        <label for="role">Rôle</label>
-        <select 
-          id="role" 
-          name="role"
-          [(ngModel)]="role" 
-          class="form-control"
-        >
-          <option value="USER">Utilisateur</option>
-          <option value="ADMIN">Administrateur</option>
-        </select>
-      </div>
-
       <div class="error-message" *ngIf="errorMessage">
         {{ errorMessage }}
       </div>
